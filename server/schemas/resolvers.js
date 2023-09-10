@@ -3,7 +3,7 @@ const { AuthenticationError } = require("@apollo/server");
 const { signToken } = require("../utils/auth");
 
 const resolvers = {
-  Querry: {
+  Query: {
     me: async (parent, args, context) => {
       if (context.user) {
         const userData = await User.findOne({})
@@ -25,13 +25,13 @@ const resolvers = {
       const user = await User.findOne({ email });
 
       if (!user) {
-        throw AuthenticationError;
+        throw new AuthenticationError("User is not found");
       }
 
       const correctPw = await user.isCorrectPassword(password);
 
       if (!correctPw) {
-        throw AuthenticationError;
+        throw new AuthenticationError("Wrong Password");
       }
 
       const token = signToken(user);
@@ -55,7 +55,7 @@ const resolvers = {
   },
   removeBook: async (parent, args, context) => {
     if (context.user) {
-      return updateUser.findOneAndUpdate(
+      return User.findOneAndUpdate(
         { _id: context.user._id },
         {
           $pull: { savedBooks: { bookid: args.bookid } },
@@ -63,6 +63,6 @@ const resolvers = {
         { new: true }
       );
     }
-    throw AuthenticationError;
+    throw new AuthenticationError("You need to be logged in");
   },
 };

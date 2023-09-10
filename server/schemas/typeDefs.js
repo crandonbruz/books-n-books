@@ -27,7 +27,7 @@ input savedBook {
     authors: [String]
 }
 
-type Querry {
+type Query {
     me: User
 }
 
